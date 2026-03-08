@@ -5,81 +5,97 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Для Дашуни</title>
     <style>
-        body { margin: 0; overflow: hidden; background: #fff0f5; font-family: 'Arial', sans-serif; }
-        canvas { display: block; }
+        body { margin: 0; overflow: hidden; background: #000; font-family: 'Arial', sans-serif; }
+        canvas { display: block; position: absolute; top: 0; left: 0; }
         
         #overlay {
             position: absolute;
-            top: 50%;
-            left: 50%;
+            top: 50%; left: 50%;
             transform: translate(-50%, -50%);
-            text-align: center;
-            width: 90%;
-            pointer-events: none;
+            text-align: center; width: 100%; z-index: 10;
         }
 
         .word {
-            display: inline-block;
-            opacity: 0;
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: #ff1493;
-            text-shadow: 0 0 10px #fff, 0 0 20px #ff69b4;
-            transition: opacity 1s ease-in-out;
-            margin: 5px;
+            display: block; opacity: 0;
+            font-size: 2.2rem; font-weight: bold;
+            color: #ff69b4;
+            text-shadow: 0 0 15px #ff1493, 0 0 30px #ff1493;
+            transition: opacity 2s ease-in-out; /* Очень плавный переход */
+            margin: 10px 0;
         }
 
         .visible { opacity: 1; }
+
+        /* Стили для сердечка */
+        #heart {
+            font-size: 80px; color: #ff1493;
+            opacity: 0; transition: opacity 3s ease;
+            text-shadow: 0 0 20px #ff69b4;
+            display: block; margin-top: 20px;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
     </style>
 </head>
 <body>
     <canvas id="matrix"></canvas>
     <div id="overlay">
-        <span class="word">С 8 марта</span>
-        <span class="word">любимая,</span>
-        <span class="word">люблю тебя</span>
-        <span class="word">до безумия</span>
-        <span class="word">Дашунь</span>
+        <span class="word">С 8 марта, любимая!</span>
+        <span class="word">Люблю тебя до безумия,</span>
+        <span class="word">моя Дашуня</span>
+        <div id="heart">❤</div>
     </div>
 
     <script>
-        // Фон "Бегущие строчки"
         const canvas = document.getElementById('matrix');
         const ctx = canvas.getContext('2d');
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
 
-        const words = "ЛЮБЛЮ ТЕБЯ";
-        const fontSize = 16;
+        // Плотные розовые буквы как на скрине
+        const words = "ЛЮБЛЮТЕБЯДАША❤ЛЮБОВЬ";
+        const fontSize = 18;
         const columns = canvas.width / fontSize;
-        const drops = Array(Math.floor(columns)).fill(1);
+        const drops = Array(Math.floor(columns)).fill(0);
 
         function draw() {
-            ctx.fillStyle = 'rgba(255, 240, 245, 0.1)';
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.1)'; // Оставляем хвосты
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = '#ffb6c1';
-            ctx.font = fontSize + 'px arial';
+            
+            ctx.fillStyle = '#ff1493'; // Ярко-розовый
+            ctx.font = fontSize + 'px monospace';
 
             drops.forEach((y, i) => {
                 const text = words[Math.floor(Math.random() * words.length)];
                 ctx.fillText(text, i * fontSize, y * fontSize);
-                if (y * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+                
+                if (y * fontSize > canvas.height && Math.random() > 0.95) {
+                    drops[i] = 0;
+                }
                 drops[i]++;
             });
         }
-        setInterval(draw, 50);
+        setInterval(draw, 40);
 
-        // Появление текста по очереди
+        // Плавное появление текста и сердца
         const elements = document.querySelectorAll('.word');
+        const heart = document.getElementById('heart');
         let current = 0;
+
         function showNext() {
             if (current < elements.length) {
                 elements[current].classList.add('visible');
                 current++;
-                setTimeout(showNext, 1200); // Скорость появления слов
+                setTimeout(showNext, 2500); // Задержка между фразами
+            } else {
+                setTimeout(() => { heart.style.opacity = '1'; }, 1000);
             }
         }
-        window.onload = () => setTimeout(showNext, 500);
+        window.onload = () => setTimeout(showNext, 1000);
     </script>
 </body>
 </html>
