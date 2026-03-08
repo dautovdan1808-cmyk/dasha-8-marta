@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Для Дашуни</title>
+    <style>
+        body { margin: 0; overflow: hidden; background: #fff0f5; font-family: 'Arial', sans-serif; }
+        canvas { display: block; }
+        
+        #overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            width: 90%;
+            pointer-events: none;
+        }
+
+        .word {
+            display: inline-block;
+            opacity: 0;
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #ff1493;
+            text-shadow: 0 0 10px #fff, 0 0 20px #ff69b4;
+            transition: opacity 1s ease-in-out;
+            margin: 5px;
+        }
+
+        .visible { opacity: 1; }
+    </style>
+</head>
+<body>
+    <canvas id="matrix"></canvas>
+    <div id="overlay">
+        <span class="word">С 8 марта</span>
+        <span class="word">любимая,</span>
+        <span class="word">люблю тебя</span>
+        <span class="word">до безумия</span>
+        <span class="word">Дашунь</span>
+    </div>
+
+    <script>
+        // Фон "Бегущие строчки"
+        const canvas = document.getElementById('matrix');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const words = "ЛЮБЛЮ ТЕБЯ";
+        const fontSize = 16;
+        const columns = canvas.width / fontSize;
+        const drops = Array(Math.floor(columns)).fill(1);
+
+        function draw() {
+            ctx.fillStyle = 'rgba(255, 240, 245, 0.1)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#ffb6c1';
+            ctx.font = fontSize + 'px arial';
+
+            drops.forEach((y, i) => {
+                const text = words[Math.floor(Math.random() * words.length)];
+                ctx.fillText(text, i * fontSize, y * fontSize);
+                if (y * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
+            });
+        }
+        setInterval(draw, 50);
+
+        // Появление текста по очереди
+        const elements = document.querySelectorAll('.word');
+        let current = 0;
+        function showNext() {
+            if (current < elements.length) {
+                elements[current].classList.add('visible');
+                current++;
+                setTimeout(showNext, 1200); // Скорость появления слов
+            }
+        }
+        window.onload = () => setTimeout(showNext, 500);
+    </script>
+</body>
+</html>
